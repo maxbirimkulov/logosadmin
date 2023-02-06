@@ -1,23 +1,40 @@
-import logo from './logo.svg';
-import './App.css';
+import {useDispatch, useSelector} from "react-redux";
+import {changeStatus, getAllProducts} from "./redux/reducers/products";
+import {useEffect} from "react";
+
+
 
 function App() {
+
+  const {data, filter, status, error} = useSelector((state) => state.products )
+
+    const dispatch = useDispatch()
+
+    useEffect(() => {
+        dispatch(getAllProducts(filter))
+    },[filter])
+
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h2>{filter.category}</h2>
+      <div>
+          {
+              ['All', 'fish', 'meat', 'drinks'].map((item) => (
+                  <button style={{background: filter.category === item ? 'red' : 'buttonface'}} type='button' onClick={() => dispatch(changeStatus(item))}>{item}</button>
+              ))
+          }
+      </div>
+
+        {
+            status === 'loading' ? <h2>...Loading</h2> : status === 'error'? <h2>{error}</h2> :  data.map((item) => (
+                <div key={item.id}>
+                    <h2>{item.title}</h2>
+                    <p>{item.categories}</p>
+                </div>
+            ))
+        }
+
     </div>
   );
 }
